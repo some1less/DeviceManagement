@@ -18,4 +18,39 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.MapGet("api/devices", () =>
+{
+    
+});
+
+app.MapGet("api/devices/{id}", () =>
+{
+    
+});
+
+app.MapPost("api/devices", () =>
+{
+    
+});
+
+app.MapPut("api/devices/{id}", () =>
+{
+    
+});
+
+app.MapDelete("api/devices/{id}", () =>
+{
+    
+});
+
+app.MapGet("api/employees", () =>
+{
+    
+});
+
+app.MapGet("api/employees/{id}", () =>
+{
+    
+});
+
 app.Run();
