@@ -9,7 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DeviceDatabase ");
 builder.Services.AddDbContext<DevManagementContext>(options => options.UseSqlServer(connectionString));
+
 builder.Services.AddTransient<IDeviceRepository, DeviceRepository>();
+builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
+
+builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 builder.Services.AddTransient<IDeviceService, DeviceService>();
 
 // Add services to the container.
@@ -102,14 +106,32 @@ app.MapDelete("api/devices/{id}", async (IDeviceService service, int id) =>
     }
 });
 
-// app.MapGet("api/employees", () =>
-// {
-//     
-// });
-//
-// app.MapGet("api/employees/{id}", () =>
-// {
-//     
-// });
+app.MapGet("api/employees", async (IEmployeeService service) =>
+{
+    try
+    {
+        var employees = await service.GetAllEmployeesAsync();
+        return Results.Ok(employees);
+
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+});
+
+app.MapGet("api/employees/{id}", async (IEmployeeService service, int id) =>
+{
+    try
+    {
+        var employee = await service.GetEmployeeIdAsync(id);
+        if (employee == null) return Results.NotFound();
+        return Results.Ok(employee);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+});
 
 app.Run();

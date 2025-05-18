@@ -35,6 +35,7 @@ public class DeviceService : IDeviceService
     {
         var device = await _deviceRepository.GetDeviceIdAsync(deviceId);
         if (device == null) return null;
+        
         var curr = device.DeviceEmployees.FirstOrDefault(e => e.ReturnDate == null);
 
         return new DeviceByIdDTO()
