@@ -25,7 +25,7 @@ JSON bodies for easy insertion:
 {
   "deviceTypeName": "Monitor",
   "isEnabled": true,
-  "additionalProperties": "It works! :>"
+  "additionalProperties": {"color" : "red", "size" : "5inchs", "status" : "it works!!:)"}
 }
 ```
 Available Device types: Monitor, Printer, Embedded etc.
