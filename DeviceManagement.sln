@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceManagement.Rest", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceManagement.DAL", "src\DeviceManagement.DAL\DeviceManagement.DAL.csproj", "{EBF468DE-B9DC-4BCF-9720-942108AAECFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceManagement.Core", "src\DeviceManagement.Core\DeviceManagement.Core.csproj", "{41570EE9-6EB1-4C63-87B6-30804CABB8A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceManagement.Services", "src\DeviceManagement.Services\DeviceManagement.Services.csproj", "{41570EE9-6EB1-4C63-87B6-30804CABB8A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

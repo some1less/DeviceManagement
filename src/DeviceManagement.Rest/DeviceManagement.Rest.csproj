@@ -16,4 +16,9 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\DeviceManagement.DAL\DeviceManagement.DAL.csproj" />
+      <ProjectReference Include="..\DeviceManagement.Services\DeviceManagement.Services.csproj" />
+    </ItemGroup>
+
 </Project>

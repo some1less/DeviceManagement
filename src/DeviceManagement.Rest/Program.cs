@@ -1,4 +1,17 @@
+using DeviceManagement.DAL.Context;
+using DeviceManagement.DAL.Repositories;
+using DeviceManagement.Services.DTO;
+using DeviceManagement.Services.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+
+var connectionString = builder.Configuration.GetConnectionString("DeviceDatabase ");
+builder.Services.AddDbContext<DevManagementContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddTransient<IDeviceRepository, DeviceRepository>();
+builder.Services.AddTransient<IDeviceService, DeviceService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -16,41 +29,65 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
-app.MapGet("api/devices", () =>
+app.MapGet("api/devices", async (IDeviceService service) =>
 {
-    
+    try
+    {
+        var devices = await service.GetAllDevicesAsync();
+        return Results.Ok(devices);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
 });
 
-app.MapGet("api/devices/{id}", () =>
+app.MapGet("api/devices/{id}", async (IDeviceService service, int id) =>
 {
-    
+    try
+    {
+        var device = await service.GetDeviceIdAsync(id);
+        if (device == null) return Results.NotFound();
+        return Results.Ok(device);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
 });
+//
+app.MapPost("api/devices", async (IDeviceService service, CreateDeviceDTO deviceDto) =>
+{
+    try
+    {
+        var result = await service.CreateDeviceAsync(deviceDto);
+        return Results.Created($"/api/devices", result);
 
-app.MapPost("api/devices", () =>
-{
-    
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
 });
-
-app.MapPut("api/devices/{id}", () =>
-{
-    
-});
-
-app.MapDelete("api/devices/{id}", () =>
-{
-    
-});
-
-app.MapGet("api/employees", () =>
-{
-    
-});
-
-app.MapGet("api/employees/{id}", () =>
-{
-    
-});
+//
+// app.MapPut("api/devices/{id}", () =>
+// {
+//     
+// });
+//
+// app.MapDelete("api/devices/{id}", () =>
+// {
+//     
+// });
+//
+// app.MapGet("api/employees", () =>
+// {
+//     
+// });
+//
+// app.MapGet("api/employees/{id}", () =>
+// {
+//     
+// });
 
 app.Run();
