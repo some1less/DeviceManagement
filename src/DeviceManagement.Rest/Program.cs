@@ -55,7 +55,7 @@ app.MapGet("api/devices/{id}", async (IDeviceService service, int id) =>
         return Results.Problem(ex.Message);
     }
 });
-//
+
 app.MapPost("api/devices", async (IDeviceService service, CreateDeviceDTO deviceDto) =>
 {
     try
@@ -69,12 +69,24 @@ app.MapPost("api/devices", async (IDeviceService service, CreateDeviceDTO device
         return Results.Problem(ex.Message);
     }
 });
-//
-// app.MapPut("api/devices/{id}", () =>
-// {
-//     
-// });
-//
+
+app.MapPut("api/devices/{id}", async (IDeviceService service, UpdateDeviceDTO deviceDto, int id) =>
+{
+    try
+    {
+        var device = await service.GetDeviceIdAsync(id);
+        if (device == null) return Results.NotFound();
+
+        await service.UpdateDeviceAsync(id, deviceDto);
+        return Results.NoContent();
+
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+});
+
 // app.MapDelete("api/devices/{id}", () =>
 // {
 //     

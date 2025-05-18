@@ -78,8 +78,18 @@ public class DeviceService : IDeviceService
         };
     }
 
-    public async Task UpdateDeviceAsync(string id, UpdateDeviceDTO device)
+    public async Task UpdateDeviceAsync(int id, UpdateDeviceDTO deviceDto)
     {
+        var device = await _deviceRepository.GetDeviceIdAsync(id);
+        if (device == null) throw new KeyNotFoundException($"Device with id {id} not found");
+
+        var deviceType = await _deviceRepository.GetDeviceName(deviceDto.DeviceTypeName);
+        if (deviceType == null) throw new KeyNotFoundException($"Device type {deviceDto.DeviceTypeName} not found");
         
+        device.Name = deviceDto.DeviceTypeName;
+        device.IsEnabled = deviceDto.IsEnabled;
+        device.AdditionalProperties = deviceDto.AdditionalProperties?.GetRawText() ?? string.Empty;
+        
+        await _deviceRepository.UpdateDeviceAsync(device);
     }
 }
