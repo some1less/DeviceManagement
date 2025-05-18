@@ -46,9 +46,15 @@ public class DeviceRepository : IDeviceRepository
         return _context.SaveChangesAsync();
     }
 
-    public Task DeleteDeviceAsync(int deviceId)
+    public async Task DeleteDeviceAsync(int deviceId)
     {
-        throw new NotImplementedException();
+        var device = await _context.Devices.FindAsync(deviceId);
+        if (device != null)
+        {
+            _context.Devices.Remove(device);
+            await _context.SaveChangesAsync();
+        }
+
     }
 
     public async Task<DeviceType?> GetDeviceName(string name)

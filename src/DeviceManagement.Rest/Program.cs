@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 var connectionString = builder.Configuration.GetConnectionString("DeviceDatabase ");
 builder.Services.AddDbContext<DevManagementContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddTransient<IDeviceRepository, DeviceRepository>();
@@ -87,11 +86,22 @@ app.MapPut("api/devices/{id}", async (IDeviceService service, UpdateDeviceDTO de
     }
 });
 
-// app.MapDelete("api/devices/{id}", () =>
-// {
-//     
-// });
-//
+app.MapDelete("api/devices/{id}", async (IDeviceService service, int id) =>
+{
+    try
+    {
+        var device = await service.GetDeviceIdAsync(id);
+        if (device == null) return Results.NotFound();
+
+        await service.DeleteDeviceAsync(id);
+        return Results.NoContent();
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+});
+
 // app.MapGet("api/employees", () =>
 // {
 //     

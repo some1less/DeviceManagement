@@ -92,4 +92,9 @@ public class DeviceService : IDeviceService
         
         await _deviceRepository.UpdateDeviceAsync(device);
     }
+
+    public async Task DeleteDeviceAsync(int deviceId)
+    {
+        await _deviceRepository.DeleteDeviceAsync(deviceId);
+    }
 }
