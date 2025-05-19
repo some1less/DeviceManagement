@@ -38,7 +38,7 @@ public class EmployeeService : IEmployeeService
 
         return new EmployeeByIdDTO()
         {
-            Person = new Person()
+            Person = new PersonGetEmpIdDTO()
             {
                 Id = employee.PersonId,
                 FirstName = employee.Person.FirstName,
