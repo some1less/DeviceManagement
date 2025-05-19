@@ -403,4 +403,4 @@ FodyWeavers.xsd
 .idea
 .DS_Store
 appsettings.*
-scripts
+scripts.DS_Store
