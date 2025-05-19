@@ -54,7 +54,7 @@ public class DeviceService : IDeviceService
         };
     }
 
-    public async Task<CreateDeviceDTO> CreateDeviceAsync(CreateDeviceDTO deviceDto)
+    public async Task<CreateDeviceResponseDTO> CreateDeviceAsync(CreateDeviceDTO deviceDto)
     {
         
         // check if user wants to create device with type that does not exist
@@ -71,9 +71,10 @@ public class DeviceService : IDeviceService
         
         var result = await _deviceRepository.CreateDeviceAsync(device);
 
-        return new CreateDeviceDTO()
+        return new CreateDeviceResponseDTO()
         {
-            DeviceTypeName = deviceType.Name,
+            Id = result.Id,
+            DeviceTypeName = result.Name,
             IsEnabled = result.IsEnabled,
             AdditionalProperties = JsonDocument.Parse(result.AdditionalProperties).RootElement
         };
