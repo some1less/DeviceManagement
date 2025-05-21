@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DeviceDatabase ");
+var connectionString = builder.Configuration.GetConnectionString("DeviceDatabase");
 builder.Services.AddDbContext<DevManagementContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddTransient<IDeviceRepository, DeviceRepository>();

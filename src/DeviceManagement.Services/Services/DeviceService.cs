@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using DeviceManagement.DAL.Models;
 using DeviceManagement.DAL.Repositories;
@@ -63,7 +64,7 @@ public class DeviceService : IDeviceService
 
         var device = new Device()
         {
-            Name = deviceDto.DeviceTypeName,
+            Name = deviceDto.DeviceName,
             IsEnabled = deviceDto.IsEnabled,
             AdditionalProperties = deviceDto.AdditionalProperties?.GetRawText() ?? string.Empty,
             DeviceTypeId = deviceType.Id,
@@ -71,10 +72,12 @@ public class DeviceService : IDeviceService
         
         var result = await _deviceRepository.CreateDeviceAsync(device);
 
+        Debug.Assert(result.DeviceType != null, "result.DeviceType != null");
         return new CreateDeviceResponseDTO()
         {
             Id = result.Id,
-            DeviceTypeName = result.Name,
+            DeviceName = result.Name,
+            DeviceTypeName = result.DeviceType.Name,
             IsEnabled = result.IsEnabled,
             AdditionalProperties = JsonDocument.Parse(result.AdditionalProperties).RootElement
         };
@@ -88,9 +91,10 @@ public class DeviceService : IDeviceService
         var deviceType = await _deviceRepository.GetDeviceName(deviceDto.DeviceTypeName);
         if (deviceType == null) throw new KeyNotFoundException($"Device type {deviceDto.DeviceTypeName} not found");
         
-        device.Name = deviceDto.DeviceTypeName;
+        device.Name = deviceDto.Name;
         device.IsEnabled = deviceDto.IsEnabled;
         device.AdditionalProperties = deviceDto.AdditionalProperties?.GetRawText() ?? string.Empty;
+        device.DeviceTypeId = deviceType.Id;
         
         await _deviceRepository.UpdateDeviceAsync(device);
     }

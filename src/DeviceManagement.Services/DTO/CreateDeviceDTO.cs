@@ -5,6 +5,7 @@ namespace DeviceManagement.Services.DTO;
 
 public class CreateDeviceDTO
 {
+    public required string DeviceName {get;set;}
     public required string DeviceTypeName { get; set; }
     public required bool IsEnabled { get; set; }
     public JsonElement? AdditionalProperties { get; set; }
