@@ -1,22 +1,26 @@
 using System.Text.Json;
+using DeviceManagement.DAL.Context;
 using DeviceManagement.DAL.Models;
-using DeviceManagement.DAL.Repositories;
 using DeviceManagement.Services.DTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace DeviceManagement.Services.Services;
 
 public class EmployeeService : IEmployeeService
 {
-    private readonly IEmployeeRepository _employeeRepository;
+    private readonly DevManagementContext _context;
 
-    public EmployeeService(IEmployeeRepository employeeRepository)
+    public EmployeeService(DevManagementContext context)
     {
-        _employeeRepository = employeeRepository;
+        _context = context;
+        
     }
     
     public async Task<IEnumerable<EmployeeDTO>> GetAllEmployeesAsync()
     {
-        var employees = await _employeeRepository.GetAllEmployeesAsync();
+        var employees = await _context.Employees
+            .Include(p => p.Person)
+            .ToListAsync();
         var dtos = new List<EmployeeDTO>();
 
         foreach (var employee in employees)
@@ -33,7 +37,11 @@ public class EmployeeService : IEmployeeService
 
     public async Task<EmployeeByIdDTO?> GetEmployeeIdAsync(int empId)
     {
-        var employee = await _employeeRepository.GetEmployeeIdAsync(empId);
+        var employee = await _context.Employees
+            .Include(p => p.Person)
+            .Include(p => p.Position)
+            .FirstOrDefaultAsync(e => e.Id == empId);
+
         if (employee == null) return null;
 
         return new EmployeeByIdDTO()
@@ -41,6 +49,7 @@ public class EmployeeService : IEmployeeService
             Person = new PersonGetEmpIdDTO()
             {
                 Id = employee.PersonId,
+                PassportNumber = employee.Person.PassportNumber,
                 FirstName = employee.Person.FirstName,
                 MiddleName = employee.Person.MiddleName,
                 LastName = employee.Person.LastName,

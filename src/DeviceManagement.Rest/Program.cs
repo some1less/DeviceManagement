@@ -1,5 +1,4 @@
 using DeviceManagement.DAL.Context;
-using DeviceManagement.DAL.Repositories;
 using DeviceManagement.Services.DTO;
 using DeviceManagement.Services.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -9,9 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DeviceDatabase");
 builder.Services.AddDbContext<DevManagementContext>(options => options.UseSqlServer(connectionString));
-
-builder.Services.AddTransient<IDeviceRepository, DeviceRepository>();
-builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
 
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 builder.Services.AddTransient<IDeviceService, DeviceService>();

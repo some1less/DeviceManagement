@@ -1,23 +1,27 @@
 using System.Diagnostics;
 using System.Text.Json;
+using DeviceManagement.DAL.Context;
 using DeviceManagement.DAL.Models;
-using DeviceManagement.DAL.Repositories;
 using DeviceManagement.Services.DTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace DeviceManagement.Services.Services;
 
 public class DeviceService : IDeviceService
 {
-    private readonly IDeviceRepository _deviceRepository;
 
-    public DeviceService(IDeviceRepository deviceRepository)
+    private readonly DevManagementContext _context;
+
+    
+    public DeviceService(DevManagementContext context)
     {
-        _deviceRepository = deviceRepository;
+        _context = context;
     }
     
     public async Task<IEnumerable<DeviceAllDTO>> GetAllDevicesAsync()
     {
-        var devices = await _deviceRepository.GetAllDevicesAsync();
+        var devices = await _context.Devices.ToListAsync();
+        
         var devicesDto = new List<DeviceAllDTO>();
         // mapping :>
         foreach (var device in devices)
@@ -34,7 +38,12 @@ public class DeviceService : IDeviceService
 
     public async Task<DeviceByIdDTO?> GetDeviceIdAsync(int deviceId)
     {
-        var device = await _deviceRepository.GetDeviceIdAsync(deviceId);
+        var device = await _context.Devices
+            .Include(x => x.DeviceType)
+            .Include(emp => emp.DeviceEmployees)
+            .ThenInclude(emp => emp.Employee)
+            .ThenInclude(p => p.Person)
+            .FirstOrDefaultAsync(e => e.Id == deviceId);
         if (device == null) return null;
         
         var curr = device.DeviceEmployees.FirstOrDefault(e => e.ReturnDate == null);
@@ -59,7 +68,7 @@ public class DeviceService : IDeviceService
     {
         
         // check if user wants to create device with type that does not exist
-        var deviceType = await _deviceRepository.GetDeviceName(deviceDto.DeviceTypeName);
+        var deviceType = await _context.DeviceTypes.FirstOrDefaultAsync(x => x.Name == deviceDto.DeviceTypeName);
         if (deviceType == null) throw new KeyNotFoundException($"Device type {deviceDto.DeviceTypeName} not found");
 
         var device = new Device()
@@ -70,25 +79,31 @@ public class DeviceService : IDeviceService
             DeviceTypeId = deviceType.Id,
         };
         
-        var result = await _deviceRepository.CreateDeviceAsync(device);
+        _context.Devices.Add(device);
+        await _context.SaveChangesAsync();
 
-        Debug.Assert(result.DeviceType != null, "result.DeviceType != null");
+        Debug.Assert(device.DeviceType != null, "device.DeviceType != null");
         return new CreateDeviceResponseDTO()
         {
-            Id = result.Id,
-            DeviceName = result.Name,
-            DeviceTypeName = result.DeviceType.Name,
-            IsEnabled = result.IsEnabled,
-            AdditionalProperties = JsonDocument.Parse(result.AdditionalProperties).RootElement
+            Id = device.Id,
+            DeviceName = device.Name,
+            DeviceTypeName = device.DeviceType.Name,
+            IsEnabled = device.IsEnabled,
+            AdditionalProperties = JsonDocument.Parse(device.AdditionalProperties).RootElement
         };
     }
 
     public async Task UpdateDeviceAsync(int id, UpdateDeviceDTO deviceDto)
     {
-        var device = await _deviceRepository.GetDeviceIdAsync(id);
+        var device = await _context.Devices
+            .Include(x => x.DeviceType)
+            .Include(emp => emp.DeviceEmployees)
+            .ThenInclude(emp => emp.Employee)
+            .ThenInclude(p => p.Person)
+            .FirstOrDefaultAsync(e => e.Id == id);
         if (device == null) throw new KeyNotFoundException($"Device with id {id} not found");
 
-        var deviceType = await _deviceRepository.GetDeviceName(deviceDto.DeviceTypeName);
+        var deviceType = await _context.DeviceTypes.FirstOrDefaultAsync(x => x.Name == deviceDto.DeviceTypeName);
         if (deviceType == null) throw new KeyNotFoundException($"Device type {deviceDto.DeviceTypeName} not found");
         
         device.Name = deviceDto.Name;
@@ -96,11 +111,17 @@ public class DeviceService : IDeviceService
         device.AdditionalProperties = deviceDto.AdditionalProperties?.GetRawText() ?? string.Empty;
         device.DeviceTypeId = deviceType.Id;
         
-        await _deviceRepository.UpdateDeviceAsync(device);
+        _context.Entry(device).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteDeviceAsync(int deviceId)
     {
-        await _deviceRepository.DeleteDeviceAsync(deviceId);
+        var device = await _context.Devices.FindAsync(deviceId);
+        if (device != null)
+        {
+            _context.Devices.Remove(device);
+            await _context.SaveChangesAsync();
+        }
     }
 }
