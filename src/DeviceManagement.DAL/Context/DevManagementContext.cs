@@ -27,6 +27,11 @@ public partial class DevManagementContext : DbContext
     public virtual DbSet<Person> People { get; set; }
 
     public virtual DbSet<Position> Positions { get; set; }
+    
+    // protectedManagement update
+    public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Account> Accounts { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Device>(entity =>
@@ -133,6 +138,16 @@ public partial class DevManagementContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
         });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.ToTable("Role");
+            entity.HasIndex(r => r.Name).IsUnique();
+            entity.Property(e => e.Name).HasMaxLength(50).IsUnicode(false);
+
+        });
+        
+        modelBuilder.Entity<Account>().HasIndex(a=>a.Username).IsUnique();
 
         OnModelCreatingPartial(modelBuilder);
     }
