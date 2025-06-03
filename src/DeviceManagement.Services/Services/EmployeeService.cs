@@ -1,6 +1,4 @@
-using System.Text.Json;
 using DeviceManagement.DAL.Context;
-using DeviceManagement.DAL.Models;
 using DeviceManagement.Services.DTO;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +11,6 @@ public class EmployeeService : IEmployeeService
     public EmployeeService(DevManagementContext context)
     {
         _context = context;
-        
     }
     
     public async Task<IEnumerable<EmployeeDTO>> GetAllEmployeesAsync()
