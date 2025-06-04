@@ -74,24 +74,20 @@ namespace DeviceManagement.Rest.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(employee).State = EntityState.Modified;
-
-            try
-            {
+            if (User.IsInRole("Admin")) {
+                _context.Entry(employee).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
+                return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            
+            var user = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var account = await _context.Accounts.SingleOrDefaultAsync(a => a.Username == user);
+            if (account == null) return Forbid();
 
+            if (account.EmployeeId != id) return Forbid();
+
+            _context.Entry(employee).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 

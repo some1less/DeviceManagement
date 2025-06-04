@@ -47,7 +47,7 @@ namespace DeviceManagement.Rest.Controllers
         }
 
         // GET: api/accounts/5
-        [Authorize]
+        [Authorize(Roles = "Admin,User")]
         [HttpGet("{id}")]
         public async Task<ActionResult<GetSpecificAccountDTO>> GetAccount(int id)
         {
@@ -121,7 +121,7 @@ namespace DeviceManagement.Rest.Controllers
         }
 
         // POST: api/accounts
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Account>> PostAccount(CreateAccountDTO newAccount)
         {
@@ -157,7 +157,7 @@ namespace DeviceManagement.Rest.Controllers
         }
 
         // DELETE: api/accounts/5
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccount(int id)
         {
