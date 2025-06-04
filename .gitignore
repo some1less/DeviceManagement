@@ -405,3 +405,4 @@ FodyWeavers.xsd
 appsettings.*
 scripts
 .DS_Store
+DeviceManagement.sln.DotSettings
