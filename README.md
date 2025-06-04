@@ -21,14 +21,14 @@ To make application work, you have to generate appsettings.json file and put you
   "Jwt": {
     "Issuer": "http://localhost:0000",  // **instead of 0000 you can define your own port**
     "Audience": "http://localhost:0000",  // **same here**
-    "Key": "eXaMpLeOfKeYfOrGeNeRaTiNGVALIDTOKEN4444",   //   instead of "eXaMpLe..." put your own key. **IMPORTANT NOTE**: key has to have length >32
+    "Key": "eXaMpLeOfKeYfOrGeNeRaTiNGVALIDTOKEN4444",   //   instead of "eXaMpLe..." put your own key.
     "ValidInMinutes" : 10    // set up estimated time for token
   }
 
 }
 
 ```
-
+ **IMPORTANT NOTE**: key has to have length >32
 JSON bodies for easy insertion:
 [POST]/[PUT]
 ```
