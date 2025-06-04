@@ -16,12 +16,12 @@ To make application work, you have to generate appsettings.json file and put you
   },
   "AllowedHosts": "*",
   "ConnectionStrings": {
-    "DeviceDatabase" : ">>> YOUR CONNECTION STRING MUST BE HERE <<<"
+    "DeviceDatabase" :  // **YOUR CONNECTION STRING MUST BE HERE**
   },
   "Jwt": {
-    "Issuer": "http://localhost:0000",  // instead of 0000 you can define your own port
-    "Audience": "http://localhost:0000",  // same here
-    "Key": "eXaMpLeOfKeYfOrGeNeRaTiNGVALIDTOKEN4444",   //   instead of "eXaMpLe..." put your own key. IMPORTANT NOTE: key has to have length >32
+    "Issuer": "http://localhost:0000",  // **instead of 0000 you can define your own port**
+    "Audience": "http://localhost:0000",  // **same here**
+    "Key": "eXaMpLeOfKeYfOrGeNeRaTiNGVALIDTOKEN4444",   //   instead of "eXaMpLe..." put your own key. **IMPORTANT NOTE**: key has to have length >32
     "ValidInMinutes" : 10    // set up estimated time for token
   }
 
