@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +12,11 @@ using DeviceManagement.DAL.Models;
 using DeviceManagement.Services.DTO.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json.Serialization;
 
 namespace DeviceManagement.Rest.Controllers
 {
+  
     [Route("api/accounts")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -25,30 +29,55 @@ namespace DeviceManagement.Rest.Controllers
             _context = context;
         }
 
-        // GET: api/User
-        [Authorize]
+        // GET: api/accounts
+        [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
+        public async Task<ActionResult<IEnumerable<GetAllAccountsDTO>>> GetAccounts()
         {
-            return await _context.Accounts.ToListAsync();
+            var dtoList = await _context.Accounts
+                .Select(a => new GetAllAccountsDTO 
+                {
+                    Id = a.Id,
+                    Username = a.Username,
+                    Password = a.Password
+                })
+                .ToListAsync();
+
+            return Ok(dtoList);
         }
 
-        // GET: api/User/5
+        // GET: api/accounts/5
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(int id)
+        public async Task<ActionResult<GetSpecificAccountDTO>> GetAccount(int id)
         {
             var account = await _context.Accounts.FindAsync(id);
-
             if (account == null)
             {
                 return NotFound();
             }
 
-            return account;
+            if (User.IsInRole("Admin"))
+            {
+                return new GetSpecificAccountDTO
+                {
+                    Password = account.Password,
+                    Username = account.Username,
+                };
+            }
+
+            var user = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (user == null || account.Username != user)
+                return Forbid();
+
+            return new GetSpecificAccountDTO
+            {
+                Password = account.Password,
+                Username = account.Username,
+            };
         }
 
-        // PUT: api/User/5
+        // PUT: api/accounts/5
         [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAccount(int id, Account account)
@@ -115,7 +144,7 @@ namespace DeviceManagement.Rest.Controllers
             
         }
 
-        // DELETE: api/User/5
+        // DELETE: api/accounts/5
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccount(int id)
