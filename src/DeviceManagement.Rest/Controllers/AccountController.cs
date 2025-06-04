@@ -78,17 +78,29 @@ namespace DeviceManagement.Rest.Controllers
         }
 
         // PUT: api/accounts/5
-        [Authorize]
+        [Authorize(Roles = "Admin,User")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccount(int id, Account account)
+        public async Task<IActionResult> PutAccount(int id, UpdateAccountDTO dto)
         {
-            if (id != account.Id)
+            var account = await _context.Accounts.FindAsync(id);
+            if (account == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(account).State = EntityState.Modified;
-
+            if (User.IsInRole("Admin"))
+            {
+                account.Username = dto.Username;
+                account.Password = _passwordHasher.HashPassword(account, dto.Password);
+            }
+            
+            var user = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (user == null || account.Username != user)
+                return Forbid();
+            
+            account.Username = dto.Username;
+            account.Password = _passwordHasher.HashPassword(account, dto.Password);
+            
             try
             {
                 await _context.SaveChangesAsync();
