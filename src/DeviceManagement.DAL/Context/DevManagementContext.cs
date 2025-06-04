@@ -7,10 +7,7 @@ namespace DeviceManagement.DAL.Context;
 
 public partial class DevManagementContext : DbContext
 {
-    public DevManagementContext()
-    {
-    }
-
+    public DevManagementContext() { }
     public DevManagementContext(DbContextOptions<DevManagementContext> options)
         : base(options)
     {
@@ -142,15 +139,33 @@ public partial class DevManagementContext : DbContext
         modelBuilder.Entity<Role>(entity =>
         {
             entity.ToTable("Role");
-            entity.HasIndex(r => r.Name).IsUnique();
-            entity.Property(e => e.Name).HasMaxLength(50).IsUnicode(false);
 
+            entity.HasIndex(r => r.Name).IsUnique();
+            entity.HasMany(r => r.Accounts)
+                .WithOne(r => r.Role)
+                .HasForeignKey(r => r.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Account>(entity =>
+        {
+            entity.ToTable("Account");
+
+            entity.HasIndex(a => a.Username).IsUnique();
+            entity.HasOne(a => a.Role)
+                .WithMany(r => r.Accounts)
+                .HasForeignKey(a => a.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(a => a.Employee)
+                .WithOne()
+                .HasForeignKey<Account>(a => a.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
         
-        modelBuilder.Entity<Account>().HasIndex(a=>a.Username).IsUnique();
-
         OnModelCreatingPartial(modelBuilder);
+
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
 }

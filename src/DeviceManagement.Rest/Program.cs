@@ -6,11 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DeviceDatabase");
-builder.Services.AddDbContext<DevManagementContext>(options => options.UseSqlServer(connectionString));
+var connectionString = builder.Configuration.GetConnectionString("DeviceDatabase")
+    ?? throw new Exception("DeviceDatabase connection string is not found");
 
+builder.Services.AddDbContext<DevManagementContext>(o => o.UseSqlServer(connectionString));
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 builder.Services.AddTransient<IDeviceService, DeviceService>();
+
+builder.Services.AddControllers();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -28,7 +31,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("api/devices", async (IDeviceService service) =>
+app.MapControllers();
+
+/*app.MapGet("api/devices", async (IDeviceService service) =>
 {
     try
     {
@@ -128,6 +133,6 @@ app.MapGet("api/employees/{id}", async (IEmployeeService service, int id) =>
     {
         return Results.Problem(ex.Message);
     }
-});
+});*/
 
 app.Run();
