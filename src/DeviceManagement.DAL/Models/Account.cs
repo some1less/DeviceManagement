@@ -7,11 +7,11 @@ public class Account
     public int Id { get; set; }
     
     [Required]
-    [Length(1,50)]
+    [Length(3,50)]
     public string Username { get; set; } = null!;
     
     [Required]
-    [Length(1,25)]
+    [Length(12,25)]
     public string Password { get; set; } = null!;
     
     public int EmployeeId { get; set; }

@@ -1,18 +1,43 @@
+using System.Text;
 using DeviceManagement.DAL.Context;
 using DeviceManagement.Services.DTO;
+using DeviceManagement.Services.Helpers.Options;
 using DeviceManagement.Services.Services;
+using DeviceManagement.Services.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtConfig = builder.Configuration.GetSection("Jwt");
 
 var connectionString = builder.Configuration.GetConnectionString("DeviceDatabase")
     ?? throw new Exception("DeviceDatabase connection string is not found");
 
 builder.Services.AddDbContext<DevManagementContext>(o => o.UseSqlServer(connectionString));
+
+builder.Services.Configure<JwtOptions>(jwtConfig);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtConfig["Issuer"],
+            ValidAudience = jwtConfig["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig["Key"])),
+            ClockSkew = TimeSpan.FromMinutes(10)
+        };
+    });
+builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 builder.Services.AddTransient<IDeviceService, DeviceService>();
-
 builder.Services.AddControllers();
 
 // Add services to the container.
@@ -30,6 +55,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
