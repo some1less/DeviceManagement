@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DeviceManagement.DAL.Context;
 using DeviceManagement.DAL.Models;
+using DeviceManagement.Services.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DeviceManagement.Rest.Controllers
 {
@@ -22,13 +25,15 @@ namespace DeviceManagement.Rest.Controllers
         }
 
         // GET: api/Emp
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
         {
             return await _context.Employees.ToListAsync();
         }
 
-        // GET: api/Emp/5
+        // GET: api/employees/5
+        [Authorize(Roles = "Admin,User")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
@@ -38,13 +43,30 @@ namespace DeviceManagement.Rest.Controllers
             {
                 return NotFound();
             }
+            
+            if (User.IsInRole("Admin"))
+            {
+                return Ok(employee);
+            }
 
-            return employee;
+            var user = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var account = await _context.Accounts
+                .SingleOrDefaultAsync(a => a.Username == user);
+            if (account == null)
+                return Forbid();
+
+            if (account.EmployeeId != id)
+            {
+                return Forbid();
+            }
+
+            return Ok(employee);
         }
 
-        // PUT: api/Emp/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: api/employees/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,User")]
+
         public async Task<IActionResult> PutEmployee(int id, Employee employee)
         {
             if (id != employee.Id)
@@ -74,7 +96,7 @@ namespace DeviceManagement.Rest.Controllers
         }
 
         // POST: api/Emp
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
         {
@@ -86,6 +108,7 @@ namespace DeviceManagement.Rest.Controllers
 
         // DELETE: api/Emp/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
