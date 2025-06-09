@@ -1,0 +1,41 @@
+{
+    "Validations":[
+        {
+            "Type": "PC",
+            "PreRequestName": "isEnabled",
+            "PreRequestValue": "true",
+            "Rules": [
+                {
+                    "ParamName": "operationSystem",
+                    "Regex": "/^[a-zA-Z]{3,}$/"
+                }
+            ]
+        },
+        {
+            "Type": "Embedded",
+            "PreRequestName": "isEnabled",
+            "PreRequestValue": "true",
+            "Rules": [
+                {
+                    "ParamName": "networkName",
+                    "Regex": ["CompanyNameWifi1", "CompanyNameWifi2"]
+                },
+                {
+                    "ParamName": "ipAddress",
+                    "Regex": "172.0.18.\\S{1,3}"
+                }
+            ]
+        },
+        {
+            "Type": "Smartwatch",
+            "PreRequestName": "isEnabled",
+            "PreRequestValue": "true",
+            "Rules": [
+                {
+                    "ParamName": "batteryLevel",
+                    "Regex": "[1-9]{2}%|100%"
+                }
+            ]
+        }
+    ]
+}

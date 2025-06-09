@@ -1,15 +1,16 @@
 using System.Text;
 using DeviceManagement.DAL.Context;
-using DeviceManagement.Services.DTO;
+using DeviceManagement.Rest.Middleware;
 using DeviceManagement.Services.Helpers.Options;
 using DeviceManagement.Services.Services;
 using DeviceManagement.Services.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 var jwtConfig = builder.Configuration.GetSection("Jwt");
 
@@ -162,5 +163,7 @@ app.MapGet("api/employees/{id}", async (IEmployeeService service, int id) =>
         return Results.Problem(ex.Message);
     }
 });*/
+
+app.UseMiddleware<Middleware>();
 
 app.Run();
