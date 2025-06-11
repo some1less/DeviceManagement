@@ -125,20 +125,31 @@ namespace DeviceManagement.Rest.Controllers
         [HttpPost]
         public async Task<ActionResult<Account>> PostAccount(CreateAccountDTO newAccount)
         {
-            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == newAccount.RoleName);
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == newAccount.RoleId);
 
             if (role == null)
             { 
-                throw new Exception($"Role with name {newAccount.RoleName} not found");
+                return NotFound($"Role with Id={newAccount.RoleId} not found");
             }
 
             var employee = await _context.Employees
-                .FirstOrDefaultAsync(e => e.Person.FirstName == newAccount.EmployeeName);
+                .FirstOrDefaultAsync(e => e.Id == newAccount.EmployeeId);
             if (employee == null)
             {
-                throw new Exception($"Person with name {newAccount.EmployeeName} not found");
+                return NotFound($"Person with Id={newAccount.EmployeeId} not found");
             }
-
+            
+            var takenEmp = await _context.Accounts.AnyAsync(a => a.EmployeeId == newAccount.EmployeeId);
+            if (takenEmp)
+            {
+                return Conflict($"Employee with Id {newAccount.EmployeeId} already has account");
+            }
+            var takenUser = await _context.Accounts.AnyAsync(a => a.Username == newAccount.Username);
+            if (takenUser)
+            {
+                return Conflict($"Username {newAccount.Username} already taken");
+            }
+            
             var account = new Account()
             {
                 Username = newAccount.Username,
@@ -151,6 +162,15 @@ namespace DeviceManagement.Rest.Controllers
             
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
+
+            await _context.Accounts
+                .Where(a => a.Id == account.Id)
+                .Include(a => a.Employee)
+                .ThenInclude(e => e.Person)
+                .Include(a => a.Employee)
+                .ThenInclude(e => e.Position)
+                .Include(a => a.Role)
+                .FirstAsync();
             
             return CreatedAtAction("GetAccount", new { id = account.Id }, account);
             

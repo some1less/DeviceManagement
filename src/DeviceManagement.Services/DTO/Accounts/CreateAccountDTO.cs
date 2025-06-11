@@ -18,10 +18,8 @@ public class CreateAccountDTO
     public string Password { get; set; }
     
     [Required]
-    [MaxLength(50)]
-    public string RoleName { get; set; }
+    public int EmployeeId { get; set; }
     
     [Required]
-    [MaxLength(50)]
-    public string EmployeeName { get; set; }
+    public int RoleId { get; set; }
 }
