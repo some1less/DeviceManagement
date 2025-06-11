@@ -3,6 +3,7 @@ using System.Text.Json;
 using DeviceManagement.DAL.Context;
 using DeviceManagement.DAL.Models;
 using DeviceManagement.Services.DTO;
+using DeviceManagement.Services.DTO.DeviceTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeviceManagement.Services.Services;
@@ -34,6 +35,22 @@ public class DeviceService : IDeviceService
         }
         
         return devicesDto;
+    }
+
+    public async Task<IEnumerable<GetAllDeviceTypesDTO>> GetAllDeviceTypesAsync()
+    {
+        var deviceTypes = await _context.DeviceTypes.ToListAsync();
+        var deviceTypesDtos = new List<GetAllDeviceTypesDTO>();
+        foreach (var type in deviceTypes)
+        {
+            deviceTypesDtos.Add(new GetAllDeviceTypesDTO()
+            {
+                Id = type.Id,
+                Name = type.Name,
+            });
+        }
+        
+        return deviceTypesDtos;
     }
 
     public async Task<DeviceByIdDTO?> GetDeviceIdAsync(int deviceId)

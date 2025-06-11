@@ -35,14 +35,14 @@ namespace DeviceManagement.Rest.Controllers
         public async Task<ActionResult<IEnumerable<GetAllAccountsDTO>>> GetAccounts()
         {
             var dtoList = await _context.Accounts
+                .OrderBy(a => a.Id)  
                 .Select(a => new GetAllAccountsDTO 
                 {
                     Id = a.Id,
                     Username = a.Username,
-                    Password = a.Password
                 })
                 .ToListAsync();
-
+            
             return Ok(dtoList);
         }
 

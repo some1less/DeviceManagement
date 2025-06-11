@@ -80,7 +80,22 @@ namespace DeviceManagement.Rest.Controllers
                 return BadRequest(ex);
             }
         }
-
+        
+        [Authorize(Roles = "Admin")]
+        [HttpGet("types")]
+        public async Task<IActionResult> GetDeviceTypes()
+        {
+            try
+            {
+                var devices = await _deviceService.GetAllDeviceTypesAsync();
+                return Ok(devices);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+        
         // POST: api/devices
         [Authorize(Roles = "Admin")]
         [HttpPost]

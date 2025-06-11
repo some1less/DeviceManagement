@@ -94,8 +94,23 @@ namespace DeviceManagement.Rest.Controllers
         // POST: api/Emp
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
+        public async Task<ActionResult<Employee>> PostEmployee(CreateEmployeeDTO dto)
         {
+            
+            if (dto.Salary < 0)
+                return BadRequest("Salary must be greater than 0");
+            
+            var position = await _context.Positions.SingleOrDefaultAsync(p => p.Id == dto.PositionId);
+            if (position == null)
+                return NotFound($"Position with id={dto.PositionId} not found");
+
+            Employee employee = new Employee()
+            {
+                Person = dto.Person,
+                Salary = dto.Salary,
+                PositionId = dto.PositionId,
+            };
+                
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
