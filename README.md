@@ -38,4 +38,4 @@
 ![image](https://github.com/user-attachments/assets/f495b677-9437-4dea-b8c1-8baefba91813)
 
 ## Outside the project
-> Why did I split code into the **projects**? Personally, I'm used to, and was taught to, keep each layer as a separate project. This decision gives me absolute flexibility in configuring each project and its packages. **Thanks to Kostya, I can understand that choice very well**.
+> Why did I split code into the **projects** inside the solution? Personally, I'm used to, and was taught to, keep each layer as a separate project. This decision gives me absolute flexibility in configuring each project and its packages. **Thanks to Kostya, I can understand that choice very well**.
