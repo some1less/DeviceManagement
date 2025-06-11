@@ -22,17 +22,20 @@
     "Issuer": "http://localhost:0000",
     "Audience": "http://localhost:0000",
     "Key": ">>keyToken<<",
-    "ValidInMinutes" : 10    // set up estimated time for token
+    "ValidInMinutes" : 10
   }
 }
 ```
 
 ## Inside application.json file
-> User has to specify in the **"ConnectionStrings"** field connection string, which will make possible to connect between your own database (e.g. it's can be Docker/Azure) and the main program. 
+> User has to specify in the **"ConnectionStrings"** field connection string, which will make possible to connect between your own database (e.g. it's can be Docker/Azure) and the main program.
 
-> There is also one more important field called "Jwt". This field is responsible for **Authentication** within the program. For instance, **"Issuer"** and **"Audience"** must have user-defined ports. The **"Key"** field is the most **important** because only this field gives the user access to create a valid authentication token.
+> There is also one more important field called "Jwt". This field is responsible for **Authentication** within the program. For instance, **"Issuer"** and **"Audience"** must have user-defined ports. The **"Key"** field is the most **important** because only this field gives the user access to create a valid authentication token. In the last, but (not) the least important field **"ValidInMinutes"** the user has to specify how long the token will be **valid** (in minutes).
 
  **__Imporant note__**: **"Key"** field value has to have length more than 32 symbols!
 
+## Project database structure
+![image](https://github.com/user-attachments/assets/f495b677-9437-4dea-b8c1-8baefba91813)
+
 ## Outside the project
-> The main decision to split a code was done by me personally. Personally, I'm used to, and was taught to, keep each layer as a separate project. This decision gives me absolute flexibility in customising the project and its packages. **Thanks to Kostya, I can understand that choice very well**.
+> Why did I split code into the **projects**? Personally, I'm used to, and was taught to, keep each layer as a separate project. This decision gives me absolute flexibility in configuring each project and its packages. **Thanks to Kostya, I can understand that choice very well**.
