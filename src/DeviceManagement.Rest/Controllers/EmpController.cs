@@ -110,6 +110,24 @@ namespace DeviceManagement.Rest.Controllers
             
             if (dto.Salary < 0)
                 return BadRequest("Salary must be greater than 0");
+
+            var takenPass = await _context.People.AnyAsync(p=>p.PassportNumber==dto.Person.PassportNumber);
+            if (takenPass)
+            {
+                return Conflict($"Some person already has this passport number: {dto.Person.PassportNumber}");
+            }
+            
+            var takenPhone = await _context.People.AnyAsync(p => p.PhoneNumber == dto.Person.PhoneNumber);
+            if (takenPhone)
+            {
+                return Conflict($"Some person already has this phone number: {dto.Person.PhoneNumber}");
+            }
+            
+            var takenEmail = await _context.People.AnyAsync(p => p.Email == dto.Person.Email);
+            if (takenEmail)
+            {
+                return Conflict($"Some person already has this email: {dto.Person.Email}");
+            }
             
             var position = await _context.Positions.SingleOrDefaultAsync(p => p.Id == dto.PositionId);
             if (position == null)
