@@ -2,7 +2,6 @@ namespace DeviceManagement.Services.DTO;
 
 public class PersonGetEmpIdDTO
 {
-    public int Id { get; set; }
 
     public string PassportNumber { get; set; } = null!;
 

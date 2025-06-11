@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using DeviceManagement.DAL.Context;
 using DeviceManagement.DAL.Models;
 using DeviceManagement.Services.DTO;
+using DeviceManagement.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace DeviceManagement.Rest.Controllers
@@ -17,11 +18,13 @@ namespace DeviceManagement.Rest.Controllers
     [ApiController]
     public class EmpController : ControllerBase
     {
+        private readonly IEmployeeService _employeeService;
         private readonly DevManagementContext _context;
 
-        public EmpController(DevManagementContext context)
+        public EmpController(DevManagementContext context, IEmployeeService employeeService)
         {
             _context = context;
+            _employeeService = employeeService;
         }
 
         // GET: api/Emp
@@ -29,7 +32,15 @@ namespace DeviceManagement.Rest.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
         {
-            return await _context.Employees.ToListAsync();
+            try
+            {
+                var employees = await _employeeService.GetAllEmployeesAsync();
+                return Ok(employees);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/employees/5
@@ -37,7 +48,7 @@ namespace DeviceManagement.Rest.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _employeeService.GetEmployeeIdAsync(id);
 
             if (employee == null)
             {

@@ -61,23 +61,15 @@ public class DeviceService : IDeviceService
             .ThenInclude(emp => emp.Employee)
             .ThenInclude(p => p.Person)
             .FirstOrDefaultAsync(e => e.Id == deviceId);
+        
         if (device == null) return null;
         
-        var curr = device.DeviceEmployees.FirstOrDefault(e => e.ReturnDate == null);
-
         return new DeviceByIdDTO()
         {
-            DeviceTypeName = device.DeviceType?.Name ?? "Unknown",
+            Name = device.Name,
             IsEnabled = device.IsEnabled,
             AdditionalProperties = JsonDocument.Parse(device.AdditionalProperties).RootElement,
-            Employee = curr is null
-                ? null
-                : new EmployeeDTO()
-                {
-                    Id = curr.Employee.Id,
-                    Name =
-                        $"{curr.Employee.Person.FirstName} {curr.Employee.Person.MiddleName} {curr.Employee.Person.LastName}"
-                }
+            Type = device.DeviceType?.Name ?? "Unknown",
         };
     }
 

@@ -25,7 +25,7 @@ public class EmployeeService : IEmployeeService
             dtos.Add(new EmployeeDTO()
             {
                 Id = employee.Id,
-                Name = $"{employee.Person.FirstName} {employee.Person.MiddleName} {employee.Person.LastName}"
+                FullName = $"{employee.Person.FirstName} {employee.Person.MiddleName} {employee.Person.LastName}"
             });
         }
         
@@ -45,7 +45,6 @@ public class EmployeeService : IEmployeeService
         {
             Person = new PersonGetEmpIdDTO()
             {
-                Id = employee.PersonId,
                 PassportNumber = employee.Person.PassportNumber,
                 FirstName = employee.Person.FirstName,
                 MiddleName = employee.Person.MiddleName,
@@ -54,11 +53,7 @@ public class EmployeeService : IEmployeeService
                 Email = employee.Person.Email,
             },
             Salary = employee.Salary,
-            Position = new PositionDTO()
-            {
-                Id = employee.PositionId,
-                Name = employee.Position.Name
-            },
+            Position = employee.Position.Name,
             HireDate = employee.HireDate
         };
     }

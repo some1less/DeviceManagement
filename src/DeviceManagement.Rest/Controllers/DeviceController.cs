@@ -50,6 +50,7 @@ namespace DeviceManagement.Rest.Controllers
             try
             {
                 var device = await _deviceService.GetDeviceIdAsync(id);
+                
                 if (device == null)
                     return NotFound();
 

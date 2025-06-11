@@ -51,7 +51,9 @@ namespace DeviceManagement.Rest.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GetSpecificAccountDTO>> GetAccount(int id)
         {
-            var account = await _context.Accounts.FindAsync(id);
+            var account = await _context.Accounts
+                .Include(a => a.Role)
+                .FirstOrDefaultAsync(a => a.Id == id);
             if (account == null)
             {
                 return NotFound();
@@ -61,8 +63,8 @@ namespace DeviceManagement.Rest.Controllers
             {
                 return new GetSpecificAccountDTO
                 {
-                    Password = account.Password,
                     Username = account.Username,
+                    Role = account.Role.Name
                 };
             }
 
@@ -72,8 +74,8 @@ namespace DeviceManagement.Rest.Controllers
 
             return new GetSpecificAccountDTO
             {
-                Password = account.Password,
                 Username = account.Username,
+                Role = account.Role.Name
             };
         }
 
