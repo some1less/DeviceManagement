@@ -68,8 +68,8 @@ public class DeviceService : IDeviceService
     {
         
         // check if user wants to create device with type that does not exist
-        var deviceType = await _context.DeviceTypes.FirstOrDefaultAsync(x => x.Name == deviceDto.DeviceTypeName);
-        if (deviceType == null) throw new KeyNotFoundException($"Device type {deviceDto.DeviceTypeName} not found");
+        var deviceType = await _context.DeviceTypes.FirstOrDefaultAsync(x => x.Id == deviceDto.TypeId);
+        if (deviceType == null) throw new KeyNotFoundException($"Device type with id={deviceDto.TypeId} not found");
 
         var device = new Device()
         {
@@ -103,10 +103,10 @@ public class DeviceService : IDeviceService
             .FirstOrDefaultAsync(e => e.Id == id);
         if (device == null) throw new KeyNotFoundException($"Device with id {id} not found");
 
-        var deviceType = await _context.DeviceTypes.FirstOrDefaultAsync(x => x.Name == deviceDto.DeviceTypeName);
-        if (deviceType == null) throw new KeyNotFoundException($"Device type {deviceDto.DeviceTypeName} not found");
+        var deviceType = await _context.DeviceTypes.FirstOrDefaultAsync(x => x.Id == deviceDto.TypeId);
+        if (deviceType == null) throw new KeyNotFoundException($"Device type id={deviceDto.TypeId} not found");
         
-        device.Name = deviceDto.Name;
+        device.Name = deviceDto.DeviceName;
         device.IsEnabled = deviceDto.IsEnabled;
         device.AdditionalProperties = deviceDto.AdditionalProperties?.GetRawText() ?? string.Empty;
         device.DeviceTypeId = deviceType.Id;

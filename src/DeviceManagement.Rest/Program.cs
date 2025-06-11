@@ -9,8 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+builder.Logging.ClearProviders().AddConsole().SetMinimumLevel(LogLevel.Debug);
 
 var jwtConfig = builder.Configuration.GetSection("Jwt");
 
@@ -60,110 +59,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
-
-/*app.MapGet("api/devices", async (IDeviceService service) =>
-{
-    try
-    {
-        var devices = await service.GetAllDevicesAsync();
-        return Results.Ok(devices);
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(ex.Message);
-    }
-});
-
-app.MapGet("api/devices/{id}", async (IDeviceService service, int id) =>
-{
-    try
-    {
-        var device = await service.GetDeviceIdAsync(id);
-        if (device == null) return Results.NotFound();
-        return Results.Ok(device);
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(ex.Message);
-    }
-});
-
-app.MapPost("api/devices", async (IDeviceService service, CreateDeviceDTO deviceDto) =>
-{
-    try
-    {
-        var result = await service.CreateDeviceAsync(deviceDto);
-        return Results.Created($"/api/devices", result);
-
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(ex.Message);
-    }
-});
-
-app.MapPut("api/devices/{id}", async (IDeviceService service, UpdateDeviceDTO deviceDto, int id) =>
-{
-    try
-    {
-        var device = await service.GetDeviceIdAsync(id);
-        if (device == null) return Results.NotFound();
-
-        await service.UpdateDeviceAsync(id, deviceDto);
-        return Results.NoContent();
-
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(ex.Message);
-    }
-});
-
-app.MapDelete("api/devices/{id}", async (IDeviceService service, int id) =>
-{
-    try
-    {
-        var device = await service.GetDeviceIdAsync(id);
-        if (device == null) return Results.NotFound();
-
-        await service.DeleteDeviceAsync(id);
-        return Results.NoContent();
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(ex.Message);
-    }
-});
-
-app.MapGet("api/employees", async (IEmployeeService service) =>
-{
-    try
-    {
-        var employees = await service.GetAllEmployeesAsync();
-        return Results.Ok(employees);
-
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(ex.Message);
-    }
-});
-
-app.MapGet("api/employees/{id}", async (IEmployeeService service, int id) =>
-{
-    try
-    {
-        var employee = await service.GetEmployeeIdAsync(id);
-        if (employee == null) return Results.NotFound();
-        return Results.Ok(employee);
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(ex.Message);
-    }
-});*/
-
 app.UseMiddleware<Middleware>();
+app.MapControllers();
 
 app.Run();
